@@ -5,19 +5,19 @@ function StoredList(name, timestamp, storageHandler){
     };
     this.wrapHandler = function(handler){
         return function(event){
-            if (event.key === this.ids.name && event.newValue !== event.oldValue){
-                this.ids.list = localStorage[this.ids.name];
+            if (event.key === this.name && event.newValue !== event.oldValue){
+                this.list = localStorage[this.name]; 
                 //let isAddition = event.oldValue.length < event.newValue.length;
                 //var id = isAddition ? event.newValue.slice(event.oldValue.length, -1) : event.oldValue.slice(event.newValue.length, -1);
                 //Do something with id that was added/removed
-                handler.call(event);
+                handler.call(event, event);
             }
-        };
+        }.bind(this);
     };
     if (!localStorage[name]){ if (typeof GM_getResourceText === 'function') localStorage.setItem(name, GM_getResourceText(name)); else localStorage.setItem(name, ''); }
     this.name = name;
     this.timestamp = timestamp || false;
-    this.storageHandler = !!storageHandler ? this.wrapHandler(storageHandler) : function(event){ if (event.key === this.ids.name && event.newValue !== event.oldValue) this.ids.list = localStorage[this.ids.name]; };
+    this.storageHandler = !!storageHandler ? this.wrapHandler(storageHandler) : function(event){ if (event.key === this.name && event.newValue !== event.oldValue) this.list = localStorage[this.name]; }.bind(this);
     this.now = Date.now()/3.6e6 >> 0;
     this.list = localStorage[this.name];
     window.addEventListener('storage', this.storageHandler, false);
